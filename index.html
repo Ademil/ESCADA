@@ -1,0 +1,1085 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>APavan_Escada – Projeto Estrutural de Escadas</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0e0f14;
+    --surface: #16181f;
+    --surface2: #1e2029;
+    --border: #2a2d3a;
+    --accent: #e8c547;
+    --accent2: #4ecdc4;
+    --accent3: #ff6b6b;
+    --text: #e8eaf0;
+    --muted: #7a7f96;
+    --ok: #56cf8a;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    min-height: 100vh;
+  }
+  /* HEADER */
+  header {
+    border-bottom: 1px solid var(--border);
+    padding: 20px 40px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    background: var(--surface);
+  }
+  .logo-icon {
+    width: 42px; height: 42px;
+    background: var(--accent);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 18px;
+    color: var(--bg);
+    flex-shrink: 0;
+  }
+  header h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+  }
+  header p { color: var(--muted); font-size: 11px; margin-top: 2px; }
+  .nbr-badge {
+    margin-left: auto;
+    background: var(--border);
+    padding: 4px 10px;
+    font-size: 10px;
+    color: var(--accent);
+    border: 1px solid var(--accent);
+    letter-spacing: 1px;
+  }
+  /* LAYOUT */
+  .app {
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    min-height: calc(100vh - 65px);
+  }
+  /* SIDEBAR */
+  .sidebar {
+    border-right: 1px solid var(--border);
+    padding: 24px;
+    background: var(--surface);
+    overflow-y: auto;
+  }
+  .section-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 14px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--border);
+  }
+  .form-group {
+    margin-bottom: 14px;
+  }
+  label {
+    display: block;
+    font-size: 10px;
+    color: var(--muted);
+    margin-bottom: 5px;
+    letter-spacing: 0.5px;
+  }
+  label span.unit { color: var(--accent2); margin-left: 4px; }
+  input[type=number], select {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 8px 10px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    outline: none;
+    transition: border-color .2s;
+  }
+  input[type=number]:focus, select:focus { border-color: var(--accent); }
+  select option { background: var(--bg); }
+  .divider {
+    border: none; border-top: 1px dashed var(--border);
+    margin: 20px 0;
+  }
+  .calc-btn {
+    width: 100%;
+    background: var(--accent);
+    color: var(--bg);
+    border: none;
+    padding: 12px;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+    letter-spacing: 1px;
+    transition: opacity .2s, transform .1s;
+  }
+  .calc-btn:hover { opacity: .88; transform: translateY(-1px); }
+  .calc-btn:active { transform: translateY(0); }
+  /* MAIN */
+  main {
+    padding: 24px 32px;
+    overflow-y: auto;
+  }
+  .tabs {
+    display: flex;
+    gap: 2px;
+    margin-bottom: 28px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 0;
+  }
+  .tab {
+    padding: 8px 18px;
+    background: transparent;
+    border: none;
+    color: var(--muted);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    cursor: pointer;
+    letter-spacing: 0.5px;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    transition: color .2s, border-color .2s;
+  }
+  .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+  .tab:hover:not(.active) { color: var(--text); }
+  /* CARDS */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 20px 24px;
+    margin-bottom: 16px;
+  }
+  .card-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--accent2);
+    margin-bottom: 14px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .card-title .step-n {
+    background: var(--accent2);
+    color: var(--bg);
+    width: 22px; height: 22px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 700;
+    flex-shrink: 0;
+  }
+  /* RESULT ROWS */
+  .result-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 10px;
+  }
+  .result-item {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    padding: 10px 14px;
+  }
+  .result-item .r-label { font-size: 9px; color: var(--muted); letter-spacing: 0.5px; margin-bottom: 4px; }
+  .result-item .r-value {
+    font-family: 'Syne', sans-serif;
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--accent);
+  }
+  .result-item .r-unit { font-size: 10px; color: var(--muted); margin-left: 4px; }
+  /* FORMULA DISPLAY */
+  .formula-box {
+    background: var(--bg);
+    border-left: 3px solid var(--accent);
+    padding: 10px 14px;
+    font-size: 12px;
+    color: var(--accent2);
+    margin: 10px 0;
+    line-height: 1.8;
+  }
+  /* DIAGRAM AREA */
+  .diagram-wrap {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    padding: 16px;
+    margin-top: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  canvas { display: block; }
+  /* ALERT / STATUS */
+  .status-ok, .status-warn, .status-err {
+    padding: 8px 14px;
+    font-size: 11px;
+    margin-top: 8px;
+    font-weight: 500;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .status-ok  { background: rgba(86,207,138,.1); border-left: 3px solid var(--ok);     color: var(--ok);    }
+  .status-warn{ background: rgba(232,197,71,.1);  border-left: 3px solid var(--accent); color: var(--accent);}
+  .status-err { background: rgba(255,107,107,.1); border-left: 3px solid var(--accent3);color: var(--accent3);}
+  /* TABLE */
+  .data-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  .data-table th, .data-table td {
+    text-align: left;
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  .data-table th { color: var(--muted); font-size: 10px; letter-spacing: 1px; }
+  .data-table td:last-child { color: var(--accent); font-weight: 500; }
+  /* REBAR SELECT */
+  .rebar-result {
+    display: flex; align-items: center; gap: 12px;
+    background: var(--bg);
+    border: 1px solid var(--ok);
+    padding: 14px 18px;
+    margin-top: 12px;
+  }
+  .rebar-sym {
+    font-family: 'Syne', sans-serif;
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--ok);
+  }
+  .rebar-desc { font-size: 11px; color: var(--text); line-height: 1.7; }
+  /* EMPTY STATE */
+  .empty-state {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    height: 300px;
+    color: var(--muted);
+    gap: 12px;
+    text-align: center;
+  }
+  .empty-state .big { font-size: 48px; opacity: .3; }
+  .empty-state p { font-size: 12px; line-height: 1.7; max-width: 260px; }
+  /* Tab panels */
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+  /* Responsive */
+  @media(max-width: 720px) {
+    .app { grid-template-columns: 1fr; }
+    .sidebar { border-right: none; border-bottom: 1px solid var(--border); }
+    main { padding: 16px; }
+  }
+
+  /* ── NOVO: Tabela de barras comerciais ── */
+  .rebar-com-wrap { margin-top: 16px; }
+  .rebar-com-title {
+    font-size: 10px; letter-spacing: 1.5px; color: var(--muted);
+    text-transform: uppercase; margin-bottom: 8px;
+  }
+  .rebar-com-table { width: 100%; border-collapse: collapse; font-size: 11px; }
+  .rebar-com-table th {
+    background: var(--surface2); color: var(--muted);
+    font-size: 9px; letter-spacing: 1px; text-transform: uppercase;
+    padding: 7px 10px; text-align: center; border-bottom: 1px solid var(--border);
+  }
+  .rebar-com-table td {
+    padding: 7px 10px; text-align: center;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg);
+  }
+  .rebar-com-table tr.rebar-row-active td {
+    background: rgba(86,207,138,0.08);
+    color: var(--ok);
+  }
+  .rebar-com-table tr.rebar-row-active td .phi-badge {
+    background: var(--ok); color: var(--bg);
+  }
+  .rebar-com-table tr.rebar-row-insuf td { color: var(--accent3); opacity: .7; }
+  .phi-badge {
+    display: inline-block;
+    background: var(--border); color: var(--text);
+    padding: 2px 7px; font-weight: 700;
+    font-family: 'Syne', sans-serif; font-size: 12px;
+  }
+  .rebar-apply-btn {
+    background: transparent; border: 1px solid var(--border);
+    color: var(--muted); padding: 4px 10px; cursor: pointer;
+    font-family: 'IBM Plex Mono', monospace; font-size: 10px;
+    transition: border-color .2s, color .2s;
+  }
+  .rebar-apply-btn:hover { border-color: var(--accent2); color: var(--accent2); }
+  .rebar-apply-btn.applied { border-color: var(--ok); color: var(--ok); }
+  .spacing-input {
+    width: 56px; background: var(--bg); border: 1px solid var(--border);
+    color: var(--text); padding: 3px 6px;
+    font-family: 'IBM Plex Mono', monospace; font-size: 11px;
+    text-align: center; outline: none;
+  }
+  .spacing-input:focus { border-color: var(--accent); }
+  .as-cell { font-family: 'Syne', sans-serif; font-weight: 700; }
+  .as-ok  { color: var(--ok); }
+  .as-nok { color: var(--accent3); }
+</style>
+</head>
+<body>
+<header>
+  <div class="logo-icon">AP</div>
+  <div>
+    <h1>APavan_Escada</h1>
+    <p>Dimensionamento Estrutural de Escadas em Concreto Armado</p>
+  </div>
+  <div class="nbr-badge">NBR 6118 · NBR 6120</div>
+</header>
+
+<div class="app">
+  <!-- SIDEBAR: INPUTS -->
+  <aside class="sidebar">
+    <div class="section-title">▸ Geometria</div>
+
+    <div class="form-group">
+      <label>Largura do degrau – a <span class="unit">cm</span></label>
+      <input type="number" id="a_deg" value="29" min="1">
+    </div>
+    <div class="form-group">
+      <label>Altura do degrau – e <span class="unit">cm</span></label>
+      <input type="number" id="e_deg" value="17.5" min="1">
+    </div>
+    <div class="form-group">
+      <label>Espessura da laje – h <span class="unit">cm</span></label>
+      <input type="number" id="h_laje" value="12" min="1">
+    </div>
+    <div class="form-group">
+      <label>Largura da escada – b <span class="unit">cm</span></label>
+      <input type="number" id="b_esc" value="127" min="1">
+    </div>
+    <div class="form-group">
+      <label>Comprimento do lance – L1 (inclinado) <span class="unit">m</span></label>
+      <input type="number" id="L1" value="2.09" step="0.01" min="0.5">
+    </div>
+    <div class="form-group">
+      <label>Comprimento do patamar – L2 <span class="unit">m</span></label>
+      <input type="number" id="L2" value="1.37" step="0.01" min="0.1">
+    </div>
+
+    <hr class="divider">
+    <div class="section-title">▸ Cargas</div>
+
+    <div class="form-group">
+      <label>Revestimento <span class="unit">kN/m²</span></label>
+      <input type="number" id="rev" value="0.80" step="0.05">
+    </div>
+    <div class="form-group">
+      <label>Carga acidental – q (NBR-6120) <span class="unit">kN/m²</span></label>
+      <input type="number" id="q_acid" value="2.50" step="0.05">
+    </div>
+    <div class="form-group">
+      <label>Carga acidental lateral parapeito <span class="unit">kN/m</span></label>
+      <input type="number" id="q_par_lin" value="2.00" step="0.05">
+    </div>
+    <div class="form-group">
+      <label>Altura do parapeito <span class="unit">m</span></label>
+      <input type="number" id="h_par" value="1.00" step="0.05">
+    </div>
+    <div class="form-group">
+      <label>Espessura do parapeito (alvenaria) <span class="unit">cm</span></label>
+      <input type="number" id="esp_par" value="15" step="1">
+    </div>
+
+    <hr class="divider">
+    <div class="section-title">▸ Material</div>
+
+    <div class="form-group">
+      <label>fck do concreto <span class="unit">MPa</span></label>
+      <select id="fck">
+        <option value="20">C20 – fck = 20 MPa</option>
+        <option value="25" selected>C25 – fck = 25 MPa</option>
+        <option value="30">C30 – fck = 30 MPa</option>
+        <option value="35">C35 – fck = 35 MPa</option>
+        <option value="40">C40 – fck = 40 MPa</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Aço longitudinal</label>
+      <select id="aco_long">
+        <option value="CA50" selected>CA-50 (fyk = 500 MPa)</option>
+        <option value="CA60">CA-60 (fyk = 600 MPa)</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Classe de agressividade</label>
+      <select id="agressividade">
+        <option value="I" selected>I – Fraca</option>
+        <option value="II">II – Moderada</option>
+        <option value="III">III – Forte</option>
+      </select>
+    </div>
+
+    <hr class="divider">
+    <button class="calc-btn" onclick="calcular()">⟳ CALCULAR ESCADA</button>
+  </aside>
+
+  <!-- MAIN: RESULTS -->
+  <main>
+    <div class="tabs">
+      <button class="tab active" onclick="switchTab('t1',this)">GEOMETRIA &amp; CARGAS</button>
+      <button class="tab" onclick="switchTab('t2',this)">ESFORÇOS</button>
+      <button class="tab" onclick="switchTab('t3',this)">ARMADURAS</button>
+      <button class="tab" onclick="switchTab('t4',this)">ANCORAGEM</button>
+      <button class="tab" onclick="switchTab('t5',this)">RESUMO</button>
+    </div>
+
+    <!-- TAB 1 -->
+    <div id="t1" class="tab-panel active">
+      <div class="empty-state" id="empty1">
+        <div class="big">📐</div>
+        <p>Preencha os dados e clique em <strong>CALCULAR ESCADA</strong> para iniciar o dimensionamento.</p>
+      </div>
+      <div id="res1" style="display:none"></div>
+    </div>
+
+    <!-- TAB 2 -->
+    <div id="t2" class="tab-panel">
+      <div class="empty-state" id="empty2">
+        <div class="big">📊</div>
+        <p>Os diagramas de esforços aparecerão aqui após o cálculo.</p>
+      </div>
+      <div id="res2" style="display:none"></div>
+    </div>
+
+    <!-- TAB 3 -->
+    <div id="t3" class="tab-panel">
+      <div class="empty-state" id="empty3">
+        <div class="big">🔩</div>
+        <p>O dimensionamento das armaduras aparecerá aqui.</p>
+      </div>
+      <div id="res3" style="display:none"></div>
+    </div>
+
+    <!-- TAB 4 -->
+    <div id="t4" class="tab-panel">
+      <div class="empty-state" id="empty4">
+        <div class="big">⚓</div>
+        <p>Os comprimentos de ancoragem aparecerão aqui.</p>
+      </div>
+      <div id="res4" style="display:none"></div>
+    </div>
+
+    <!-- TAB 5 -->
+    <div id="t5" class="tab-panel">
+      <div class="empty-state" id="empty5">
+        <div class="big">📋</div>
+        <p>O resumo completo do projeto aparecerá aqui.</p>
+      </div>
+      <div id="res5" style="display:none"></div>
+    </div>
+  </main>
+</div>
+
+<script>
+// ─── HELPERS ─────────────────────────────────────────────────────────────────
+const v = id => parseFloat(document.getElementById(id).value);
+const s = id => document.getElementById(id).value;
+const fmt = (n, dec=2) => n.toFixed(dec);
+const fmtK = (n, dec=2) => fmt(n,dec) + ' kN/m²';
+const fmtM = (n, dec=2) => fmt(n,dec) + ' kN·m/m';
+const fmtV = (n, dec=2) => fmt(n,dec) + ' kN/m';
+
+function switchTab(id, btn) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  btn.classList.add('active');
+}
+
+function resultCard(stepN, title, html) {
+  return `<div class="card">
+    <div class="card-title"><span class="step-n">${stepN}</span>${title}</div>
+    ${html}
+  </div>`;
+}
+
+function resGrid(items) {
+  return '<div class="result-grid">' + items.map(([label,val,unit]) =>
+    `<div class="result-item">
+      <div class="r-label">${label}</div>
+      <div class="r-value">${val}<span class="r-unit">${unit}</span></div>
+    </div>`
+  ).join('') + '</div>';
+}
+
+function formulaBox(...lines) {
+  return `<div class="formula-box">${lines.join('<br>')}</div>`;
+}
+
+// ─── DIAMETERS / BAR TABLES ──────────────────────────────────────────────────
+const barDiams = [6.3, 8, 10, 12, 16, 20, 25]; // mm
+function pickBar(AsReq_cm2_per_m, spacing_hint = 13) {
+  // returns {phi, s, As_prov}
+  for (const phi of barDiams) {
+    const a_bar = Math.PI*(phi/10)**2/4; // cm²
+    const s_calc = a_bar / (AsReq_cm2_per_m / 100); // m between bars
+    let s_cm = Math.round(s_calc*100);
+    if (s_cm < 6) continue;
+    if (s_cm > 30) s_cm = 30;
+    const As_prov = a_bar / (s_cm/100);
+    if (As_prov >= AsReq_cm2_per_m) return {phi, s: s_cm, As_prov};
+  }
+  const phi = 25;
+  const a_bar = Math.PI*(phi/10)**2/4;
+  const s_cm = 6;
+  return {phi, s: s_cm, As_prov: a_bar/(s_cm/100)};
+}
+
+// ─── MAIN CALCULATION ────────────────────────────────────────────────────────
+function calcular() {
+  // INPUTS
+  const a   = v('a_deg');       // cm – piso do degrau
+  const e   = v('e_deg');       // cm – espelho do degrau
+  const h   = v('h_laje');      // cm – espessura da laje
+  const b   = v('b_esc');       // cm – largura
+  const L1  = v('L1');          // m – lance inclinado
+  const L2  = v('L2');          // m – patamar
+  const rev = v('rev');         // kN/m²
+  const q_a = v('q_acid');      // kN/m²
+  const q_pl= v('q_par_lin');   // kN/m – carga lateral parapeito
+  const h_par = v('h_par');     // m
+  const esp_par = v('esp_par'); // cm
+  const fck = v('fck');         // MPa
+  const aco = s('aco_long');    // CA50 / CA60
+  const agr = s('agressividade');
+
+  // Material properties
+  const fyk = aco === 'CA50' ? 500 : 600;
+  const gamma_s = 1.15;
+  const gamma_c = 1.4;
+  const fyd = fyk / gamma_s;          // MPa
+  const fcd = fck / gamma_c;          // MPa
+  // sigma_cd (MPa) ≡ 0.85*fcd
+  const sigma_cd = 0.85 * fcd;       // MPa
+
+  // Cover by agressivity
+  const coverMap = { I: 2.5, II: 3.0, III: 4.0 };
+  const c = coverMap[agr]; // cm
+
+  // ── 1. GEOMETRY ─────────────────────────────────────────────────────────
+  const cosAlpha = a / Math.sqrt(a**2 + e**2);
+  const alpha_deg = Math.acos(cosAlpha) * 180 / Math.PI;
+  const h1 = h / cosAlpha;                  // cm – espessura vertical
+  const hm = h1 + e/2;                      // cm – espessura média
+  const hm_m = hm / 100;                    // m
+
+  // ── 2. LOADS ─────────────────────────────────────────────────────────────
+  // A) Patamar (p1)
+  const g_pat = 25*h/100 + rev;             // kN/m²
+  const p1    = g_pat + q_a;                // kN/m²
+
+  // B) Lance inclinado (p2)
+  const g_inc = 25*hm_m + rev;              // self + revestimento
+  // Parapeito
+  const peso_par = 25 * (h_par * esp_par/100);  // kN/m (volume × γ)
+  const g_par_m2 = peso_par / (b/100);          // kN/m² dividing by width
+  const q_par_m2 = q_pl / (b/100);              // kN/m² lateral accidental
+  const g2_total = g_inc + g_par_m2;
+  const q2_total = q_a + q_par_m2;
+  const p2 = g2_total + q2_total;
+
+  // ── 3. REACTIONS ─────────────────────────────────────────────────────────
+  // Model: simply supported beam
+  // Left support (V228) = Ro, Right support (VE) = Rs
+  // Lance p2 from x=0 to L1, patamar p1 from L1 to L1+L2
+  const L_tot = L1 + L2;
+  const Rs = (p2*L1*(L1/2) + p1*L2*(L1+L2/2)) / L_tot;
+  const Ro = p2*L1 + p1*L2 - Rs;
+
+  // ── 4. ESFORÇOS ──────────────────────────────────────────────────────────
+  // Moment diagram – simply supported with UDL on each segment
+  // Maximum moment on inclined span using exact position
+  // d(M)/dx = 0 → x* = Ro/p2  (if x* ≤ L1)
+  const x_max_inc = Ro / p2;
+  const xeff = x_max_inc <= L1 ? x_max_inc : L1;
+  const M_max_inc = Ro*xeff - p2*xeff**2/2;   // kN·m/m at x = xeff
+  // Moment at end of inclined span
+  const M_L1 = Ro*L1 - p2*L1**2/2;
+  // Max moment over patamar
+  // On patamar x from L1: M(x) = Ro*(L1+t) - p2*L1*(L1/2 + t) - p1*t²/2, t in [0,L2]
+  // d/dt = 0 → t* = (Ro - p2*L1)/p1
+  const t_star = (Ro - p2*L1) / p1;
+  let M_max_pat = 0;
+  if (t_star > 0 && t_star < L2) {
+    M_max_pat = Ro*(L1+t_star) - p2*L1*(L1/2+t_star) - p1*t_star**2/2;
+  }
+  const M_max = Math.max(M_max_inc, M_max_pat);
+
+  // Shear forces
+  const V_max = Math.max(Math.abs(Ro), Math.abs(Rs));
+  // Shear at left (end of inclined beam, acting on section ⊥ to slab)
+  const V_sec = Ro * cosAlpha; // kN/m on section
+
+  // ── 5. DIMENSIONAMENTO ARMADURA LONGITUDINAL ────────────────────────────
+  const phi_long = 10;         // mm assumed initial
+  const d_cm = h - c - phi_long/10/2;  // altura útil em cm
+  const d_m  = d_cm / 100;
+
+  // Md = M_max (kN·m/m)
+  const Md = M_max;
+  // b = 1.0 m (por metro de largura)
+  const b_m = 1.0; // m
+  // σcd in kN/cm²
+  const sigma_cd_kNcm = sigma_cd / 100; // MPa = kN/cm², ok
+  const fyd_kNcm = fyd / 100; // kN/cm²
+
+  // μ = Md / (b·d²·σcd)   [kN·m/m / (100cm·(d_cm)²·kN/cm²)] → unit check
+  // Md in kN·m/m = 100 kN·cm/m → Md×100 in kN·cm/m = kN·cm per cm width
+  const Md_kNcm = Md * 100; // kN·cm/m
+  const mu = Md_kNcm / (100 * d_cm**2 * sigma_cd_kNcm);
+  const mu_lim = 0.2952; // CA-50
+
+  let As_calc, armType;
+  if (mu <= mu_lim) {
+    const xi = 1.25*(1 - Math.sqrt(1 - 2*mu));
+    As_calc = 0.8 * xi * 100 * d_cm * (sigma_cd_kNcm / fyd_kNcm); // cm²/m
+    armType = 'simples';
+  } else {
+    // Armadura dupla (simplificado)
+    const xi_lim = 1.25*(1 - Math.sqrt(1 - 2*mu_lim));
+    As_calc = 0.8 * xi_lim * 100 * d_cm * (sigma_cd_kNcm / fyd_kNcm);
+    armType = 'dupla (verificar)';
+  }
+
+  // Armadura mínima
+  const As_min = 0.15/100 * 100 * h; // 0.15% × b × h cm²/m
+  const As_adot = Math.max(As_calc, As_min);
+
+  // Pick bar
+  const bar = pickBar(As_adot, 13);
+
+  // Armadura de distribuição
+  const As_dist = Math.max(As_adot/5, 0.9, 0.5*As_min);
+  const bar_dist = pickBar(As_dist, 17);
+
+  // ── 6. ANCORAGEM ─────────────────────────────────────────────────────────
+  // fbd – resistência de aderência
+  const eta1 = 1.0; // barras nervuradas
+  const fctm = 0.3 * fck**(2/3); // MPa
+  const fctk_inf = 0.7 * fctm;
+  const fbd = eta1 * fctk_inf / gamma_c; // MPa
+  const fbd_MPa = fbd;
+
+  const phi_m = bar.phi / 1000; // m
+  const phi_mm = bar.phi;
+  const phi_cm = phi_mm / 10;
+
+  // lb básico
+  const lb = (phi_mm/4)*(fyd/fbd_MPa); // mm
+  const lb_cm = lb/10;
+
+  // Área necessária ancoragem
+  const Vd_max = Math.max(Ro, Rs);
+  const a1 = 1.5; // (sem arm. cisalh.)
+  const As_anc = a1 * Vd_max / fyd_kNcm; // cm²/m
+
+  // lb,nec = 0.7 * lb * As_cal/As_prov (gancho)
+  const lb_nec = 0.7 * lb_cm * (As_calc / bar.As_prov);
+  // lb,min = max(6cm, R + 5.5φ)  R=2.5φ → lb,min = max(6cm, 7φ+5.5φ)... 
+  // simplified: for CA-50 φ≤20: lb,min = max(6, 2.5*phi_cm + 5.5*phi_cm) =  max(6, 8*phi_cm)
+  const lb_min = Math.max(6, 8 * phi_cm);
+  const lb_adot = Math.max(lb_nec, lb_min);
+
+  // ── RENDER ────────────────────────────────────────────────────────────────
+  // ── TAB 1: Geometry & Loads ──
+  const html1 = resultCard(1,'GEOMETRIA DA ESCADA',
+    formulaBox(
+      `cos α = a / √(a² + e²) = ${a}/√(${a}²+${e}²) = ${fmt(cosAlpha,4)}`,
+      `α = ${fmt(alpha_deg,2)}°`,
+      `h₁ = h/cosα = ${h}/${fmt(cosAlpha,4)} = ${fmt(h1,2)} cm`,
+      `hm = h₁ + e/2 = ${fmt(h1,2)} + ${e/2} = ${fmt(hm,2)} cm`
+    ) +
+    resGrid([
+      ['Ângulo de inclinação α', fmt(alpha_deg,2), '°'],
+      ['Esp. vertical h₁', fmt(h1,2), 'cm'],
+      ['Esp. média hm', fmt(hm,2), 'cm'],
+      ['Altura útil d', fmt(d_cm,2), 'cm'],
+    ])
+  ) +
+  resultCard(2,'CARGAS NO PATAMAR (p₁)',
+    formulaBox(
+      `g = 25×h/100 + revestimento = 25×${h/100} + ${rev} = ${fmt(g_pat,2)} kN/m²`,
+      `q = ${q_a} kN/m²   (NBR-6120)`,
+      `p₁ = g + q = ${fmt(g_pat,2)} + ${q_a} = ${fmt(p1,2)} kN/m²`
+    ) +
+    resGrid([
+      ['Carga permanente g', fmt(g_pat,2), 'kN/m²'],
+      ['Carga acidental q', fmt(q_a,2), 'kN/m²'],
+      ['Carga total p₁', fmt(p1,2), 'kN/m²'],
+    ])
+  ) +
+  resultCard(3,'CARGAS NO TRECHO INCLINADO (p₂)',
+    formulaBox(
+      `Peso próprio = 25×hm = 25×${fmt(hm_m,4)} = ${fmt(25*hm_m,2)} kN/m²`,
+      `Parapeito peso: 25×${h_par}×${esp_par/100} = ${fmt(peso_par,2)} kN/m → /${fmt(b/100,2)} m = ${fmt(g_par_m2,2)} kN/m²`,
+      `g₂ = ${fmt(g_inc,2)} + ${fmt(g_par_m2,2)} = ${fmt(g2_total,2)} kN/m²`,
+      `q₂ = q + q_par = ${q_a} + ${fmt(q_par_m2,2)} = ${fmt(q2_total,2)} kN/m²`,
+      `p₂ = ${fmt(g2_total,2)} + ${fmt(q2_total,2)} = ${fmt(p2,2)} kN/m²`
+    ) +
+    resGrid([
+      ['Carga permanente g₂', fmt(g2_total,2), 'kN/m²'],
+      ['Carga acidental q₂', fmt(q2_total,2), 'kN/m²'],
+      ['Carga total p₂', fmt(p2,2), 'kN/m²'],
+    ])
+  );
+
+  // ── TAB 2: Esforços ──
+  const html2 = resultCard(4,'REAÇÕES DE APOIO',
+    formulaBox(
+      `L_tot = ${L1} + ${L2} = ${fmt(L1+L2,2)} m`,
+      `Rs = [p₂·L₁·(L₁/2) + p₁·L₂·(L₁+L₂/2)] / L_tot`,
+      `Rs = [${fmt(p2*L1*(L1/2),2)} + ${fmt(p1*L2*(L1+L2/2),2)}] / ${fmt(L_tot,2)} = ${fmt(Rs,2)} kN/m`,
+      `Ro = p₂·L₁ + p₁·L₂ − Rs = ${fmt(Ro,2)} kN/m`
+    ) +
+    resGrid([
+      ['Reação Ro (V228)', fmt(Ro,2), 'kN/m'],
+      ['Reação Rs (VE)', fmt(Rs,2), 'kN/m'],
+    ])
+  ) +
+  resultCard(5,'MOMENTOS FLETORES E ESFORÇOS CORTANTES',
+    formulaBox(
+      `x* (pos. M_max no lance) = Ro/p₂ = ${fmt(Ro,2)}/${fmt(p2,2)} = ${fmt(x_max_inc,3)} m`,
+      `M_max (lance) = Ro·x* − p₂·x*²/2 = ${fmt(M_max_inc,2)} kN·m/m`,
+      `M_max (patamar) = ${fmt(M_max_pat,2)} kN·m/m`,
+      `Md = ${fmt(M_max,2)} kN·m/m  ← valor de dimensionamento`,
+      `Vd_max = max(Ro, Rs) = ${fmt(V_max,2)} kN/m`
+    ) +
+    resGrid([
+      ['Md (momento de dimensionamento)', fmt(M_max,2), 'kN·m/m'],
+      ['Vd_max (esforço cortante)', fmt(V_max,2), 'kN/m'],
+      ['Vd_sec = Vd·cosα', fmt(V_sec,2), 'kN/m'],
+    ]) +
+    '<canvas id="diagCanvas" width="580" height="200" style="margin-top:16px;background:#0e0f14;border:1px solid #2a2d3a;display:block;max-width:100%"></canvas>'
+  );
+
+  // ── TAB 3: Armaduras ──
+  const mu_check = mu <= mu_lim
+    ? `<div class="status-ok">✓ μ = ${fmt(mu,4)} ≤ μ_lim = ${mu_lim} → Armadura simples</div>`
+    : `<div class="status-warn">⚠ μ = ${fmt(mu,4)} > μ_lim = ${mu_lim} → Considerar armadura dupla</div>`;
+
+  const html3 = resultCard(6,'ARMADURA LONGITUDINAL PRINCIPAL',
+    formulaBox(
+      `σcd = 0.85 × fcd = 0.85 × ${fmt(fcd,2)} = ${fmt(sigma_cd,2)} MPa`,
+      `fyd = fyk/γs = ${fyk}/${gamma_s} = ${fmt(fyd,2)} MPa`,
+      `d = h − c − φ/2 = ${h} − ${c} − ${phi_mm/10/2} = ${fmt(d_cm,2)} cm`,
+      `μ = Md/(b·d²·σcd) = ${fmt(Md_kNcm,2)}/(100·${fmt(d_cm,2)}²·${fmt(sigma_cd_kNcm,4)}) = ${fmt(mu,4)}`,
+      `ξ = 1.25·(1 − √(1−2μ)) = ${fmt(1.25*(1-Math.sqrt(1-2*Math.min(mu,mu_lim))),4)}`,
+      `As_calc = ${fmt(As_calc,3)} cm²/m   |   As_min = ${fmt(As_min,3)} cm²/m`,
+      `As_adotada = ${fmt(As_adot,3)} cm²/m`
+    ) +
+    mu_check +
+    resGrid([
+      ['μ', fmt(mu,4), ''],
+      ['ξ', fmt(1.25*(1-Math.sqrt(1-2*Math.min(mu,mu_lim))),4), ''],
+      ['As_calculada', fmt(As_calc,3), 'cm²/m'],
+      ['As_mínima', fmt(As_min,3), 'cm²/m'],
+      ['As_adotada', fmt(As_adot,3), 'cm²/m'],
+    ]) +
+    `<div class="rebar-result" id="rebar_long_display">
+      <div class="rebar-sym">φ${bar.phi}</div>
+      <div class="rebar-desc">
+        Diâmetro: <b>${bar.phi} mm</b><br>
+        Espaçamento: <b>c/${bar.s} cm</b><br>
+        As_fornecida: <b>${fmt(bar.As_prov,3)} cm²/m</b> ≥ ${fmt(As_adot,3)} cm²/m
+      </div>
+    </div>` +
+    buildRebarComTable(As_adot, 'rebar_long', bar.phi, bar.s)
+  ) +
+  resultCard(7,'ARMADURA DE DISTRIBUIÇÃO TRANSVERSAL',
+    formulaBox(
+      `As_dist = max(As/5, 0.9 cm²/m, 0.5·As_min)`,
+      `As_dist = max(${fmt(As_adot/5,3)}, 0.90, ${fmt(0.5*As_min,3)}) = ${fmt(As_dist,3)} cm²/m`
+    ) +
+    `<div class="rebar-result" id="rebar_dist_display">
+      <div class="rebar-sym">φ${bar_dist.phi}</div>
+      <div class="rebar-desc">
+        Diâmetro: <b>${bar_dist.phi} mm</b><br>
+        Espaçamento: <b>c/${bar_dist.s} cm</b><br>
+        As_fornecida: <b>${fmt(bar_dist.As_prov,3)} cm²/m</b> ≥ ${fmt(As_dist,3)} cm²/m
+      </div>
+    </div>` +
+    buildRebarComTable(As_dist, 'rebar_dist', bar_dist.phi, bar_dist.s)
+  );
+
+  // ── TAB 4: Ancoragem ──
+  const avail_cm = h - c; // available length in support (cm)
+  const nom_avail = avail_cm - 2.5; // subtract cover
+  const needs_hook = nom_avail < lb_adot;
+  const anc_status = needs_hook
+    ? `<div class="status-warn">⚠ Comprimento disponível (≈${fmt(nom_avail,1)} cm) < lb_nec → usar gancho de extremidade</div>`
+    : `<div class="status-ok">✓ Ancoragem reta possível</div>`;
+
+  const html4 = resultCard(8,'COMPRIMENTO DE ANCORAGEM',
+    formulaBox(
+      `fctm = 0.30·fck^(2/3) = 0.30·${fck}^(2/3) = ${fmt(fctm,3)} MPa`,
+      `fctk,inf = 0.70·fctm = ${fmt(0.7*fctm,3)} MPa`,
+      `fbd = η₁·fctk,inf/γc = 1.0·${fmt(0.7*fctm,3)}/${gamma_c} = ${fmt(fbd_MPa,3)} MPa`,
+      `lb = (φ/4)·(fyd/fbd) = (${phi_mm}/4)·(${fmt(fyd,1)}/${fmt(fbd_MPa,3)}) = ${fmt(lb,1)} mm = ${fmt(lb_cm,2)} cm`,
+      `lb,nec = 0.7·lb·(As_calc/As_prov) = ${fmt(lb_nec,2)} cm`,
+      `lb,min = max(6 cm, 8φ=${fmt(8*phi_cm,1)} cm) = ${fmt(lb_min,2)} cm`,
+      `lb,adotado = max(lb,nec, lb,min) = ${fmt(lb_adot,2)} cm`
+    ) +
+    anc_status +
+    resGrid([
+      ['fbd', fmt(fbd_MPa,3), 'MPa'],
+      ['lb básico', fmt(lb_cm,2), 'cm'],
+      ['lb,nec (com gancho)', fmt(lb_nec,2), 'cm'],
+      ['lb,min', fmt(lb_min,2), 'cm'],
+      ['lb adotado', fmt(lb_adot,2), 'cm'],
+    ])
+  );
+
+  // ── TAB 5: Resumo ──
+  const html5 = `
+  <div class="card">
+    <div class="card-title">📋 RESUMO DO PROJETO DA ESCADA</div>
+    <table class="data-table">
+      <tr><th>PARÂMETRO</th><th>VALOR</th></tr>
+      <tr><td>Degrau a × e</td><td>${a} × ${e} cm</td></tr>
+      <tr><td>Inclinação α</td><td>${fmt(alpha_deg,2)}°</td></tr>
+      <tr><td>Espessura da laje h</td><td>${h} cm</td></tr>
+      <tr><td>Espessura média hm</td><td>${fmt(hm,2)} cm</td></tr>
+      <tr><td>Altura útil d</td><td>${fmt(d_cm,2)} cm</td></tr>
+      <tr><td>p₁ (patamar)</td><td>${fmt(p1,2)} kN/m²</td></tr>
+      <tr><td>p₂ (inclinado)</td><td>${fmt(p2,2)} kN/m²</td></tr>
+      <tr><td>Reação Ro (V228)</td><td>${fmt(Ro,2)} kN/m</td></tr>
+      <tr><td>Reação Rs (VE)</td><td>${fmt(Rs,2)} kN/m</td></tr>
+      <tr><td>Momento de dimensionamento Md</td><td>${fmt(M_max,2)} kN·m/m</td></tr>
+      <tr><td>Esforço cortante Vd,max</td><td>${fmt(V_max,2)} kN/m</td></tr>
+      <tr><td>μ calculado</td><td>${fmt(mu,4)}</td></tr>
+      <tr><td>As calculada</td><td>${fmt(As_calc,3)} cm²/m</td></tr>
+      <tr><td>As adotada</td><td>${fmt(As_adot,3)} cm²/m</td></tr>
+      <tr><td>Armadura longitudinal</td><td><b>φ${bar.phi}c/${bar.s} (${aco})</b> – As = ${fmt(bar.As_prov,3)} cm²/m</td></tr>
+      <tr><td>Armadura de distribuição</td><td><b>φ${bar_dist.phi}c/${bar_dist.s} (CA-60)</b> – As = ${fmt(bar_dist.As_prov,3)} cm²/m</td></tr>
+      <tr><td>Comprimento de ancoragem</td><td>${fmt(lb_adot,2)} cm${needs_hook ? ' (com gancho)' : ''}</td></tr>
+    </table>
+  </div>`;
+
+  // ── INJECT HTML ────────────────────────────────────────────────────────────
+  ['1','2','3','4','5'].forEach(i => {
+    document.getElementById('empty'+i).style.display = 'none';
+    const el = document.getElementById('res'+i);
+    el.style.display = 'block';
+  });
+  document.getElementById('res1').innerHTML = html1;
+  document.getElementById('res2').innerHTML = html2;
+  document.getElementById('res3').innerHTML = html3;
+  document.getElementById('res4').innerHTML = html4;
+  document.getElementById('res5').innerHTML = html5;
+
+  // ── DRAW DIAGRAMS ──────────────────────────────────────────────────────────
+  setTimeout(() => drawDiagrams({p1,p2,L1,L2,Ro,Rs,M_max_inc,M_max_pat,M_max,V_max,Vd_max:V_max,x_max_inc}), 50);
+}
+
+function drawDiagrams({p1,p2,L1,L2,Ro,Rs,M_max_inc,M_max_pat,M_max,V_max,x_max_inc}) {
+  const canvas = document.getElementById('diagCanvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  ctx.clearRect(0,0,W,H);
+
+  const PAD = 30;
+  const MID = H/2;
+  const L = L1+L2;
+  const scale_x = (W - 2*PAD) / L;
+  const px = x => PAD + x * scale_x;
+
+  // Helper: draw moment diagram
+  const N = 200;
+  const scale_m = (H/2 - 20) / Math.max(M_max, 0.01);
+
+  // Moment diagram (top half)
+  ctx.beginPath();
+  ctx.moveTo(px(0), MID - 10);
+  for (let i = 0; i <= N; i++) {
+    const x = L * i / N;
+    let M;
+    if (x <= L1) {
+      M = Ro*x - p2*x**2/2;
+    } else {
+      const t = x - L1;
+      M = Ro*x - p2*L1*(L1/2+t) - p1*t**2/2;
+    }
+    ctx.lineTo(px(x), MID - 10 - M*scale_m*0.85);
+  }
+  ctx.lineTo(px(L), MID - 10);
+  ctx.closePath();
+  ctx.fillStyle = 'rgba(232,197,71,0.18)';
+  ctx.fill();
+  ctx.strokeStyle = '#e8c547';
+  ctx.lineWidth = 1.5;
+  ctx.stroke();
+
+  // Shear diagram (bottom half)
+  const scale_v = (H/2 - 20) / Math.max(V_max, 0.01);
+  ctx.beginPath();
+  // Left: Ro, then drops with p2, jumps at reaction
+  const pts = [[0, Ro]];
+  pts.push([L1, Ro - p2*L1]);
+  pts.push([L1, Ro - p2*L1 - 0]); // continuous
+  pts.push([L, Ro - p2*L1 - p1*L2]);
+  ctx.moveTo(px(0), MID+10 - Ro*scale_v*0.8);
+  pts.forEach(([x,v]) => ctx.lineTo(px(x), MID+10 - v*scale_v*0.8));
+  ctx.strokeStyle = '#4ecdc4';
+  ctx.lineWidth = 1.5;
+  ctx.stroke();
+
+  // Zero line
+  ctx.strokeStyle = '#2a2d3a';
+  ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(PAD, MID); ctx.lineTo(W-PAD, MID); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(PAD, MID-10); ctx.lineTo(W-PAD, MID-10); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(PAD, MID+10); ctx.lineTo(W-PAD, MID+10); ctx.stroke();
+
+  // Labels
+  ctx.fillStyle = '#e8c547';
+  ctx.font = '10px IBM Plex Mono';
+  ctx.fillText(`M_max=${M_max.toFixed(2)} kN·m/m`, PAD+4, 14);
+  ctx.fillStyle = '#4ecdc4';
+  ctx.fillText(`V_max=${V_max.toFixed(2)} kN/m`, PAD+4, H-6);
+}
+
+// ─── NOVO: TABELA DE BARRAS COMERCIAIS ───────────────────────────────────────
+// Dados comerciais: diâmetro (mm), área unitária (cm²)
+const barCom = [
+  { phi: 5.0,  area: 0.196 },
+  { phi: 6.3,  area: 0.312 },
+  { phi: 8.0,  area: 0.503 },
+  { phi: 10.0, area: 0.785 },
+  { phi: 12.5, area: 1.227 },
+  { phi: 16.0, area: 2.011 },
+  { phi: 20.0, area: 3.142 },
+  { phi: 25.0, area: 4.909 },
+  { phi: 32.0, area: 8.042 },
+];
+
+// Espacamentos comerciais padrão (cm)
+const spacingsCom = [5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 17, 20, 25, 30];
+
+function calcAsProv(areaBarra, spacing_cm) {
+  return areaBarra / (spacing_cm / 100); // cm²/m
+}
+
+function buildRebarComTable(AsReq, tableId, activePhi, activeSpacing) {
+  let rows = '';
+  barCom.forEach(bar => {
+    const isActive = (bar.phi === activePhi);
+    // Find best spacing for this bar
+    let bestSpacing = activeSpacing || 13;
+    // compute spacing that gives As >= AsReq
+    const s_exact = bar.area / (AsReq / 100); // m
+    const s_cm_exact = s_exact * 100;
+    // pick the largest commercial spacing <= s_cm_exact (or smallest if none)
+    let chosen = spacingsCom[0];
+    for (const sp of spacingsCom) {
+      if (sp <= s_cm_exact) chosen = sp;
+    }
+    if (isActive) bestSpacing = activeSpacing || chosen;
+    else bestSpacing = chosen;
+
+    const as_prov = calcAsProv(bar.area, bestSpacing);
+    const sufficient = as_prov >= AsReq;
+    const rowClass = isActive ? 'rebar-row-active' : (!sufficient ? 'rebar-row-insuf' : '');
+    const asClass  = sufficient ? 'as-ok' : 'as-nok';
+    const btnClass = isActive ? 'rebar-apply-btn applied' : 'rebar-apply-btn';
+    const btnTxt   = isActive ? '✓ EM USO' : 'USAR';
+
+    rows += `<tr class="${rowClass}" id="${tableId}_row_${bar.phi}">
+      <td><span class="phi-badge">φ${bar.phi}</span></td>
+      <td>${bar.area.toFixed(3)}</td>
+      <td><input class="spacing-input" type="number" min="5" max="30" step="1"
+          id="${tableId}_sp_${bar.phi}" value="${bestSpacing}"
+          onchange="rebarSpacingChanged('${tableId}',${bar.phi},${bar.area},${AsReq})"></td>
+      <td class="as-cell ${asClass}" id="${tableId}_as_${bar.phi}">${as_prov.toFixed(3)}</td>
+      <td><button class="${btnClass}" id="${tableId}_btn_${bar.phi}"
+          onclick="applyRebarSelection('${tableId}',${bar.phi},${bar.area},${AsReq})">${btnTxt}</button></td>
+    </tr>`;
+  });
+
+  return `<div class="rebar-com-wrap">
+    <div class="rebar-com-title">▸ Tabela de bitolas comerciais – clique em USAR para alterar a barra</div>
+    <table class="rebar-com-table">
+      <thead>
+        <tr>
+          <th>Bitola φ (mm)</th>
+          <th>Área unitária (cm²)</th>
+          <th>Espaçamento (cm)</th>
+          <th>As fornecida (cm²/m)</th>
+          <th>Ação</th>
+        </tr>
+      </thead>
+      <tbody>${rows}</tbody>
+    </table>
+  </div>`;
+}
+
+function rebarSpacingChanged(tableId, phi, areaBarra, AsReq) {
+  const spEl = document.getElementById(`${tableId}_sp_${phi}`);
+  if (!spEl) return;
+  const sp = parseFloat(spEl.value) || 13;
+  const as_prov = calcAsProv(areaBarra, sp);
+  const asEl = document.getElementById(`${tableId}_as_${phi}`);
+  if (asEl) {
+    asEl.textContent = as_prov.toFixed(3);
+    asEl.className = 'as-cell ' + (as_prov >= AsReq ? 'as-ok' : 'as-nok');
+  }
+  // if this row is currently active, also update the rebar-result display
+  const btnEl = document.getElementById(`${tableId}_btn_${phi}`);
+  if (btnEl && btnEl.classList.contains('applied')) {
+    updateRebarResultDisplay(tableId, phi, sp, as_prov, AsReq);
+  }
+}
+
+function applyRebarSelection(tableId, phi, areaBarra, AsReq) {
+  // Remove active state from all rows in this table
+  barCom.forEach(b => {
+    const row = document.getElementById(`${tableId}_row_${b.phi}`);
+    const btn = document.getElementById(`${tableId}_btn_${b.phi}`);
+    if (row) row.className = '';
+    if (btn) { btn.textContent = 'USAR'; btn.className = 'rebar-apply-btn'; }
+  });
+  // Activate selected row
+  const row = document.getElementById(`${tableId}_row_${phi}`);
+  const btn = document.getElementById(`${tableId}_btn_${phi}`);
+  if (row) {
+    const as_prov = calcAsProv(areaBarra, parseFloat(document.getElementById(`${tableId}_sp_${phi}`).value)||13);
+    row.className = as_prov >= AsReq ? 'rebar-row-active' : 'rebar-row-insuf';
+  }
+  if (btn) { btn.textContent = '✓ EM USO'; btn.className = 'rebar-apply-btn applied'; }
+  // Update the rebar-result summary box above the table
+  const sp = parseFloat(document.getElementById(`${tableId}_sp_${phi}`)?.value) || 13;
+  const as_prov = calcAsProv(areaBarra, sp);
+  updateRebarResultDisplay(tableId, phi, sp, as_prov, AsReq);
+}
+
+function updateRebarResultDisplay(tableId, phi, sp, as_prov, AsReq) {
+  const dispId = `${tableId}_display`;
+  const el = document.getElementById(dispId);
+  if (!el) return;
+  const ok = as_prov >= AsReq;
+  el.innerHTML = `
+    <div class="rebar-sym" style="color:${ok ? 'var(--ok)' : 'var(--accent3)'}">φ${phi}</div>
+    <div class="rebar-desc">
+      Diâmetro: <b>${phi} mm</b> &nbsp;|&nbsp; Área unitária: <b>${barCom.find(b=>b.phi===phi)?.area.toFixed(3)||'—'} cm²</b><br>
+      Espaçamento: <b>c/${sp} cm</b><br>
+      As_fornecida: <b style="color:${ok?'var(--ok)':'var(--accent3)'}">${as_prov.toFixed(3)} cm²/m</b>
+      ${ok ? '≥' : '<span style="color:var(--accent3)">&#60;</span>'} ${AsReq.toFixed(3)} cm²/m
+      ${!ok ? '<br><span style="color:var(--accent3);font-size:10px">⚠ Área insuficiente – aumente bitola ou reduza espaçamento</span>' : ''}
+    </div>`;
+}
+
+// Auto-calculate on load
+window.addEventListener('load', calcular);
+</script>
+</body>
+</html>
